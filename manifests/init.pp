@@ -9,6 +9,8 @@ class dhcp (
   Integer[0] $default_lease_time = 43200,
   Integer[0] $max_lease_time = 86400,
   String $dnskeyname = 'rndc-key',
+  Optional[Boolean] $dnskeyinclude = true,
+  String $dnskeyalgorithm = 'HMAC-MD5',
   Optional[String] $dnsupdatekey = undef,
   Optional[String] $dnsupdateserver = undef,
   Boolean $omapi = true,
