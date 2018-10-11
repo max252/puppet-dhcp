@@ -24,6 +24,8 @@ class dhcp (
   Stdlib::Absolutepath $dhcp_dir = $dhcp::params::dhcp_dir,
   String $packagename = $dhcp::params::packagename,
   String $servicename = $dhcp::params::servicename,
+  String $serviceensure = 'running',
+  Boolean $serviceenable = false,
   $option_static_route = undef,
   Variant[Array[String], Optional[String]] $options = undef,
   Boolean $authoritative = false,
@@ -153,7 +155,7 @@ class dhcp (
   create_resources('dhcp::host', $hosts)
 
   service { $servicename:
-    ensure => running,
-    enable => true,
+    ensure => $serviceensure,
+    enable => $serviceenable,
   }
 }
