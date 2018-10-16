@@ -8,6 +8,7 @@ failover peer "dhcp-failover" {
   max-response-delay <%= @max_response_delay %>;
   max-unacked-updates <%= @max_unacked_updates %>;
   load balance max seconds <%= @load_balance %>;
+  auto-partner-down <%= @auto_partner_down %>;
 <% if @role == "primary" -%>
   mclt <%= @mclt %>;
   split <%= @load_split %>;

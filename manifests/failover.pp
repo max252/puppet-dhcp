@@ -8,6 +8,7 @@ class dhcp::failover (
   Variant[Integer[0], String] $mclt = 300,
   Variant[Integer[0], String] $load_split = 128,
   Variant[Integer[0], String] $load_balance = 3,
+  Optional[Integer[0]] $auto_partner_down = 0,
   Optional[String] $omapi_key = undef,
 ) {
 
