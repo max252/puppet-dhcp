@@ -23,6 +23,7 @@ authoritative;
 ddns-updates on;
 ddns-update-style <%= @ddns_update_style %>;
 update-static-leases on;
+update-optimization <%= @update_optimization %>;
 use-host-decl-names on;
 
 <% if @ddns_domainname and !@ddns_domainname.empty? -%>

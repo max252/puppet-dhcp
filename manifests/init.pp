@@ -13,6 +13,7 @@ class dhcp (
   String $dnskeyalgorithm = 'HMAC-MD5',
   Optional[String] $dnsupdatekey = undef,
   Optional[String] $dnsupdateserver = undef,
+  Optional[Enum['true', 'false']] $update_optimization = 'true',
   Boolean $omapi = true,
   Optional[String] $omapi_name = undef,
   String $omapi_algorithm = 'HMAC-MD5',
