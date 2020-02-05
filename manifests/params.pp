@@ -1,9 +1,11 @@
+# Default parameters
+# @api private
 class dhcp::params {
 
-  $dnsdomain = [$::domain]
+  $dnsdomain = [$facts['domain']]
   $pxefilename = 'pxelinux.0'
 
-  case $::osfamily {
+  case $facts['osfamily'] {
     'Debian': {
       $dhcp_dir    = '/etc/dhcp'
       $packagename = 'isc-dhcp-server'
@@ -18,7 +20,7 @@ class dhcp::params {
 
     /^(FreeBSD|DragonFly)$/: {
       $dhcp_dir    = '/usr/local/etc'
-      $packagename = 'isc-dhcp43-server'
+      $packagename = 'isc-dhcp44-server'
       $servicename = 'isc-dhcpd'
       $root_group  = 'wheel'
       $bootfiles   = {}
@@ -37,7 +39,7 @@ class dhcp::params {
       $packagename = 'dhcp'
       $servicename = 'dhcpd'
       $root_group  = 'root'
-      if $::operatingsystemrelease =~ /^[0-6]\./ {
+      if $facts['operatingsystemrelease'] =~ /^[0-6]\./ {
         $bootfiles = {
           '00:07' => 'grub/grubx64.efi',
           '00:09' => 'grub/grubx64.efi',
@@ -52,7 +54,7 @@ class dhcp::params {
     }
 
     default: {
-      fail("${::hostname}: This module does not support osfamily ${::osfamily}")
+      fail("${facts['hostname']}: This module does not support osfamily ${facts['osfamily']}")
     }
   }
 }

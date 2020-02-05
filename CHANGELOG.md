@@ -1,5 +1,49 @@
 # Changelog
 
+## [5.1.0](https://github.com/theforeman/puppet-dhcp/tree/5.1.0) (2019-10-24)
+
+[Full Changelog](https://github.com/theforeman/puppet-dhcp/compare/5.0.1...5.1.0)
+
+**Implemented enhancements:**
+
+- Added UEFI HTTP Boot support [\#160](https://github.com/theforeman/puppet-dhcp/pull/160) ([lzap](https://github.com/lzap))
+
+## [5.0.1](https://github.com/theforeman/puppet-dhcp/tree/5.0.1) (2019-06-12)
+
+[Full Changelog](https://github.com/theforeman/puppet-dhcp/compare/5.0.0...5.0.1)
+
+**Merged pull requests:**
+
+- allow newer puppetlabs-concat version [\#157](https://github.com/theforeman/puppet-dhcp/pull/157) ([mmoll](https://github.com/mmoll))
+- Allow `puppetlabs/stdlib` 6.x [\#156](https://github.com/theforeman/puppet-dhcp/pull/156) ([alexjfisher](https://github.com/alexjfisher))
+
+## [5.0.0](https://github.com/theforeman/puppet-dhcp/tree/5.0.0) (2019-04-15)
+
+[Full Changelog](https://github.com/theforeman/puppet-dhcp/compare/4.3.0...5.0.0)
+
+**Breaking changes:**
+
+- drop Puppet 4 [\#152](https://github.com/theforeman/puppet-dhcp/pull/152) ([mmoll](https://github.com/mmoll))
+- drop EOL OSes [\#151](https://github.com/theforeman/puppet-dhcp/pull/151) ([mmoll](https://github.com/mmoll))
+
+**Implemented enhancements:**
+
+- Make the config header configurable [\#149](https://github.com/theforeman/puppet-dhcp/pull/149) ([ekohl](https://github.com/ekohl))
+
+**Fixed bugs:**
+
+- fix missing authoritative statement [\#147](https://github.com/theforeman/puppet-dhcp/pull/147) ([qs5779](https://github.com/qs5779))
+
+## [4.3.0](https://github.com/theforeman/puppet-dhcp/tree/4.3.0) (2019-01-10)
+
+[Full Changelog](https://github.com/theforeman/puppet-dhcp/compare/4.2.0...4.3.0)
+
+**Implemented enhancements:**
+
+- update FreeBSD pkg name and support 12.x [\#144](https://github.com/theforeman/puppet-dhcp/pull/144) ([mmoll](https://github.com/mmoll))
+- Create some puppet-strings documentation [\#143](https://github.com/theforeman/puppet-dhcp/pull/143) ([ekohl](https://github.com/ekohl))
+- Support Puppet 6 [\#141](https://github.com/theforeman/puppet-dhcp/pull/141) ([ekohl](https://github.com/ekohl))
+
 ## [4.2.0](https://github.com/theforeman/puppet-dhcp/tree/4.2.0) (2018-10-04)
 
 [Full Changelog](https://github.com/theforeman/puppet-dhcp/compare/4.1.1...4.2.0)

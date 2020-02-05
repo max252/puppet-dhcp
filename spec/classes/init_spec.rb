@@ -32,6 +32,7 @@ describe 'dhcp' do
             'omapi-port 7911;',
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-update-style none;',
             'option domain-name "example.com";',
             'option domain-name-servers 8.8.8.8, 8.8.4.4;',
@@ -134,6 +135,10 @@ describe 'dhcp' do
             'option interface-mtu 9000;',
             'option provision-url code 224 = text;',
             'option provision-type code 225 = text;',
+            'if substring(option vendor-class-identifier, 0, 10) = "HTTPClient" {',
+            '  option vendor-class-identifier "HTTPClient";',
+            '}',
+            'set vendor-string = option vendor-class-identifier;',
             'next-server 10.0.0.5;',
             'option architecture code 93 = unsigned integer 16 ;',
             'if option architecture = 00:00 {',
@@ -172,6 +177,7 @@ describe 'dhcp' do
             'omapi-port 7911;',
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-updates on;',
             'ddns-update-style interim;',
             'update-static-leases on;',
@@ -204,6 +210,7 @@ describe 'dhcp' do
           verify_concat_fragment_exact_contents(catalogue, 'dhcp.conf+01_main.dhcp', [
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-update-style none;',
             'option domain-name "example.com";',
             'option domain-name-servers 8.8.8.8, 8.8.4.4;',
@@ -231,6 +238,7 @@ describe 'dhcp' do
             'omapi-port 7911;',
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-update-style none;',
             'option domain-name "example.com";',
             'option domain-name-servers 8.8.8.8, 8.8.4.4;',
@@ -257,6 +265,7 @@ describe 'dhcp' do
             'omapi-port 7911;',
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-update-style none;',
             'option domain-name "example.com";',
             'option domain-name-servers 8.8.8.8, 8.8.4.4;',
@@ -284,6 +293,7 @@ describe 'dhcp' do
             'omapi-port 7911;',
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-update-style none;',
             'option domain-name "example.com";',
             'option domain-name-servers 8.8.8.8, 8.8.4.4;',
@@ -312,6 +322,7 @@ describe 'dhcp' do
             'omapi-port 7911;',
             'default-lease-time 43200;',
             'max-lease-time 86400;',
+            'not authoritative;',
             'ddns-update-style none;',
             'option domain-name "example.com";',
             'option domain-name-servers 8.8.8.8, 8.8.4.4;',
@@ -324,6 +335,21 @@ describe 'dhcp' do
             "include \"#{conf_path}/dhcpd.hosts\";",
           ])
         }
+      end
+
+      describe "with config_comment" do
+        context 'with multiple lines' do
+          let(:overridden_params) do {
+            :config_comment => "first line\nsecond line"
+          } end
+
+          it do
+            verify_concat_fragment_contents(catalogue, 'dhcp.conf+01_main.dhcp', [
+              '# first line',
+              '# second line',
+            ])
+          end
+        end
       end
     end
   end

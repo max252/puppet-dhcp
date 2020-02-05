@@ -1,4 +1,6 @@
-# dhcpd.conf
+<% @config_comment.split("\n").each do |line| -%>
+<%= "# #{line}" %>
+<% end -%>
 <% if @omapi -%>
 omapi-port 7911;
 <% if @omapi_name && @omapi_key && !@omapi_key.empty? -%>
@@ -17,6 +19,8 @@ max-lease-time <%= @max_lease_time %>;
 # Make the server authoritative for the network segments that
 # are configured, and tell it to send DHCPNAKs to bogus requests
 authoritative;
+<% else %>
+not authoritative;
 <% end -%>
 
 <% if (@dnsupdatekey && !@dnsupdatekey.empty?) || @ddns_updates -%>
@@ -94,7 +98,13 @@ option <%= option %>;
 <% end -%>
 
 <% if @pxeserver && @pxefilename -%>
-# Bootfile Handoff
+# required for UEFI HTTP boot
+if substring(option vendor-class-identifier, 0, 10) = "HTTPClient" {
+  option vendor-class-identifier "HTTPClient";
+}
+# promote vendor in dhcpd.leases
+set vendor-string = option vendor-class-identifier;
+# next server and filename options
 next-server <%= @pxeserver %>;
 <% unless @bootfiles.empty?
      bootf = @bootfiles.sort_by { |arch, file| arch } -%>

@@ -1,3 +1,4 @@
+# Manage an ISC DHCP server
 class dhcp (
   Array[String] $dnsdomain = $dhcp::params::dnsdomain,
   Array[String] $nameservers = ['8.8.8.8', '8.8.4.4'],
@@ -40,6 +41,7 @@ class dhcp (
   Hash[String, Hash] $pools = {},
   Hash[String, Hash] $hosts = {},
   Variant[Array[String], Optional[String]] $includes = undef,
+  String $config_comment = 'dhcpd.conf',
 ) inherits dhcp::params {
 
   # In case people set interface instead of interfaces work around
@@ -74,7 +76,7 @@ class dhcp (
   }
 
   # Only debian and ubuntu have this style of defaults for startup.
-  case $::osfamily {
+  case $facts['osfamily'] {
     'Debian': {
       file{ '/etc/default/isc-dhcp-server':
         ensure  => file,
@@ -87,8 +89,8 @@ class dhcp (
       }
     }
     'RedHat': {
-      if versioncmp($::operatingsystemmajrelease, '7') >= 0 {
-        include ::systemd
+      if versioncmp($facts['operatingsystemmajrelease'], '7') >= 0 {
+        include systemd
         systemd::dropin_file { 'interfaces.conf':
           unit    => 'dhcpd.service',
           content => template('dhcp/redhat/systemd-dropin.conf.erb'),
