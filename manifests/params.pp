@@ -2,16 +2,22 @@
 # @api private
 class dhcp::params {
 
-  $dnsdomain = [$facts['domain']]
+  if fact('networking.domain') {
+    $dnsdomain = [$facts['networking']['domain']]
+  } else {
+    $dnsdomain = []
+  }
   $pxefilename = 'pxelinux.0'
 
-  case $facts['osfamily'] {
+  case $facts['os']['family'] {
     'Debian': {
-      $dhcp_dir    = '/etc/dhcp'
+      $dhcp_dir = '/etc/dhcp'
+      $manage_dhcp_dir = true
+      $conf_dir_mode = '0755'
       $packagename = 'isc-dhcp-server'
       $servicename = 'isc-dhcp-server'
-      $root_group  = 'root'
-      $bootfiles   = {
+      $root_group = 'root'
+      $bootfiles = {
         '00:06' => 'grub2/bootia32.efi',
         '00:07' => 'grub2/bootx64.efi',
         '00:09' => 'grub2/bootx64.efi',
@@ -20,6 +26,8 @@ class dhcp::params {
 
     /^(FreeBSD|DragonFly)$/: {
       $dhcp_dir    = '/usr/local/etc'
+      $manage_dhcp_dir = false
+      $conf_dir_mode = undef
       $packagename = 'isc-dhcp44-server'
       $servicename = 'isc-dhcpd'
       $root_group  = 'wheel'
@@ -28,6 +36,8 @@ class dhcp::params {
 
     'Archlinux': {
       $dhcp_dir    = '/etc'
+      $manage_dhcp_dir = false
+      $conf_dir_mode = undef
       $packagename = 'dhcp'
       $servicename = 'dhcpd4'
       $root_group  = 'root'
@@ -36,10 +46,16 @@ class dhcp::params {
 
     'RedHat': {
       $dhcp_dir    = '/etc/dhcp'
-      $packagename = 'dhcp'
+      $manage_dhcp_dir = true
+      $conf_dir_mode = '0750'
+      if versioncmp($facts['os']['release']['major'], '8') >= 0 {
+        $packagename = 'dhcp-server'
+      } else {
+        $packagename = 'dhcp'
+      }
       $servicename = 'dhcpd'
       $root_group  = 'root'
-      if $facts['operatingsystemrelease'] =~ /^[0-6]\./ {
+      if $facts['os']['release']['full'] =~ /^[0-6]\./ {
         $bootfiles = {
           '00:07' => 'grub/grubx64.efi',
           '00:09' => 'grub/grubx64.efi',
@@ -54,7 +70,7 @@ class dhcp::params {
     }
 
     default: {
-      fail("${facts['hostname']}: This module does not support osfamily ${facts['osfamily']}")
+      fail("${facts['networking']['hostname']}: This module does not support osfamily ${facts['os']['family']}")
     }
   }
 }

@@ -1,7 +1,7 @@
 # Manage an ISC DHCP server
 class dhcp (
   Array[String] $dnsdomain = $dhcp::params::dnsdomain,
-  Array[String] $nameservers = ['8.8.8.8', '8.8.4.4'],
+  Array[String] $nameservers = [],
   Boolean $failover = false,
   Optional[Boolean] $bootp = undef,
   Array[String] $ntpservers = [],
@@ -21,11 +21,14 @@ class dhcp (
   Optional[String] $omapi_key = undef,
   Optional[String] $pxeserver = undef,
   String $pxefilename = $dhcp::params::pxefilename,
+  Optional[String] $ipxe_filename = undef,
   Optional[Integer[0]] $mtu  = undef,
   Hash[String, String] $bootfiles = $dhcp::params::bootfiles,
   String $logfacility = 'local7',
   Boolean $dhcp_monitor = true,
   Stdlib::Absolutepath $dhcp_dir = $dhcp::params::dhcp_dir,
+  Boolean $manage_dhcp_dir = $dhcp::params::manage_dhcp_dir,
+  Optional[Stdlib::Filemode] $conf_dir_mode = $dhcp::params::conf_dir_mode,
   String $packagename = $dhcp::params::packagename,
   String $servicename = $dhcp::params::servicename,
   String $serviceensure = 'running',
@@ -33,6 +36,7 @@ class dhcp (
   $option_static_route = undef,
   Variant[Array[String], Optional[String]] $options = undef,
   Boolean $authoritative = false,
+  String $dhcp_root_user = 'root',
   String $dhcp_root_group = $dhcp::params::root_group,
   Boolean $ddns_updates = false,
   Optional[String] $ddns_domainname = undef,
@@ -64,19 +68,28 @@ class dhcp (
     $bootp_real = $bootp
   }
 
-  $dnsupdateserver_real = pick($dnsupdateserver, $nameservers[0])
+  $dnsupdateserver_real = pick_default($dnsupdateserver, $nameservers[0])
+  if $ddns_updates or $dnsupdatekey {
+    unless $dnsupdateserver_real =~ String[1] {
+      fail('dnsupdateserver or nameservers parameter is required to enable ddns')
+    }
+  }
 
   package { $packagename:
     ensure   => installed,
   }
 
-  file { $dhcp_dir:
-    mode    => '0755',
-    require => Package[$packagename],
+  if $manage_dhcp_dir {
+    file { $dhcp_dir:
+      owner   => $dhcp_root_user,
+      group   => $dhcp_root_group,
+      mode    => $conf_dir_mode,
+      require => Package[$packagename],
+    }
   }
 
   # Only debian and ubuntu have this style of defaults for startup.
-  case $facts['osfamily'] {
+  case $facts['os']['family'] {
     'Debian': {
       file{ '/etc/default/isc-dhcp-server':
         ensure  => file,
@@ -89,7 +102,7 @@ class dhcp (
       }
     }
     'RedHat': {
-      if versioncmp($facts['operatingsystemmajrelease'], '7') >= 0 {
+      if versioncmp($facts['os']['release']['major'], '7') >= 0 {
         include systemd
         systemd::dropin_file { 'interfaces.conf':
           unit    => 'dhcpd.service',
@@ -121,7 +134,7 @@ class dhcp (
   }
 
   concat { "${dhcp_dir}/dhcpd.conf":
-    owner   => 'root',
+    owner   => $dhcp_root_user,
     group   => $dhcp_root_group,
     mode    => '0644',
     require => Package[$packagename],
@@ -143,7 +156,7 @@ class dhcp (
   }
 
   concat { "${dhcp_dir}/dhcpd.hosts":
-    owner   => 'root',
+    owner   => $dhcp_root_user,
     group   => $dhcp_root_group,
     mode    => '0644',
     require => Package[$packagename],
